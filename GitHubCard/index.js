@@ -14,17 +14,32 @@ axios.get('https://api.github.com/users/tanveersaleem786')
     let myCard = createCard(response.data);
     cards.appendChild(myCard);
 
-    followersArray.forEach( user => {
+    axios.get('https://api.github.com/users/tanveersaleem786/followers')
+      .then( response => {
+        return response;
+      })
+      .then( response => {
 
-      axios.get(`https://api.github.com/users/${user}`)
-        .then( response => {
-          let followerCard = createCard(response.data);
-          cards.appendChild(followerCard);
+        let followers = response.data;
+        let followersLoginName  = followers.map( user => {
+          return user.login;
         })
-        .catch( err => {
-          console.log("Error:", err);
-        })
-    });
+
+        followersLoginName.forEach( user => {
+
+            axios.get(`https://api.github.com/users/${user}`)
+              .then( response => {
+                let followerCard = createCard(response.data);
+                cards.appendChild(followerCard);
+              })
+              .catch( err => {
+                console.log("Error:", err);
+              })
+          });
+      })
+      .catch( err => {
+        console.log("Error:", err);
+      })
   })
   .catch( err => {
     console.log("Error:", err);
